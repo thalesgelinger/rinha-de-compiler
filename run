@@ -1,2 +1,2 @@
-cc main.c -o rinha && ./rinha
+cc main.c utils/cJSON.c -o rinha && ./rinha
 
