@@ -100,7 +100,7 @@ typedef struct PrintTerm {
 
 typedef struct StrTerm {
   TermKind kind;
-  char *value;
+  char value[20];
 } StrTerm;
 
 typedef struct Term {
@@ -118,17 +118,6 @@ typedef struct File {
   Location location;
 } File;
 
-void eval(Term *term) {
-  switch (term->kind) {
-  case Print:
-    eval(term->data.printTerm.value);
-    break;
-  case Str:
-    printf("%s", term->data.strTerm.value);
-    break;
-  }
-}
-
 void parse_location(Location *location, cJSON *jsonLocation) {
 
   cJSON *child = NULL;
@@ -141,8 +130,61 @@ void parse_location(Location *location, cJSON *jsonLocation) {
     } else if (strcmp(child->string, "filename") == 0) {
       strcpy(location->filename, child->valuestring);
     }
+  }
+}
 
-    printf("\n");
+void print_location(Location *location) {
+  printf("location.filename: %s\n", location->filename);
+  printf("location.start: %d\n", location->start);
+  printf("location.end: %d\n", location->end);
+}
+
+void print_file(File *file) {
+  printf("File name: %s\n", file->name);
+
+  print_location(&file->location);
+  printf("File expression.location.start %d\n",
+         file->expression.location.start);
+  printf("File expression.location.end %d\n", file->expression.location.end);
+}
+
+void print_term(Term *term) {
+  printf("%u\n", term->kind);
+  print_location(&term->location);
+  switch (term->kind) {
+
+  case Print:
+    print_term(term->data.printTerm.value);
+  case Str:
+    printf("%s", term->data.strTerm.value);
+    break;
+  }
+}
+
+void parse_expression(Term *term, cJSON *jsonExpression) {
+
+  cJSON *child = NULL;
+
+  cJSON_ArrayForEach(child, jsonExpression) {
+    char *key = child->string;
+    if (strcmp(key, "kind") == 0) {
+      if (strcmp(child->valuestring, "Print") == 0) {
+        term->kind = Print;
+      } else if (strcmp(child->valuestring, "Str") == 0) {
+        term->kind = Str;
+      }
+    } else if (strcmp(key, "value") == 0) {
+      if (term->kind == Print) {
+        Term *printTerm = malloc(sizeof(Term));
+        parse_expression(printTerm, child);
+        term->data.printTerm.value = printTerm;
+      } else if (term->kind == Str) {
+        strcpy(term->data.strTerm.value, child->valuestring);
+      }
+
+    } else if (strcmp(key, "location") == 0) {
+      parse_location(&term->location, child);
+    }
   }
 }
 
@@ -158,7 +200,7 @@ File *parse_file(char *filepath) {
       if (strcmp(key, "name") == 0) {
         strcpy(file->name, child->valuestring);
       } else if (strcmp(key, "expression") == 0) {
-        printf("EXPRESSION\n");
+        parse_expression(&file->expression, child);
       } else if (strcmp(key, "location") == 0) {
         parse_location(&file->location, child);
       }
@@ -169,17 +211,22 @@ File *parse_file(char *filepath) {
   return file;
 }
 
-void print_file(File *file) {
-  printf("File name: %s\n", file->name);
-  printf("File location.filename: %s\n", file->location.filename);
-  printf("File location.start: %d\n", file->location.start);
-  printf("File location.end: %d\n", file->location.end);
+void eval(Term *term) {
+  switch (term->kind) {
+  case Print:
+    eval(term->data.printTerm.value);
+    break;
+  case Str:
+    printf("%s", term->data.strTerm.value);
+    break;
+  }
 }
 
 int main() {
 
   File *file = parse_file("examples/main.json");
-  print_file(file);
+
+  eval(&file->expression);
 
   free(file);
 
