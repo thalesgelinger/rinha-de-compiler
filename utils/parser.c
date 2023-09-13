@@ -6,27 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-cJSON *parse_json(char *filepath) {
-
-  FILE *file = fopen(filepath, "r");
-
-  if (file == NULL) {
-    perror("Error opening file");
-  }
-
-  fseek(file, 0, SEEK_END);
-  long file_size = ftell(file);
-  fseek(file, 0, SEEK_SET);
-
-  char *json_data = (char *)malloc(file_size + 1);
-  if (json_data == NULL) {
-    perror("Memory allocation error");
-    fclose(file);
-  }
-
-  fread(json_data, 1, file_size, file);
-  fclose(file);
-  json_data[file_size] = '\0';
+cJSON *parse_json(char *json_data) {
 
   cJSON *root = cJSON_Parse(json_data);
 
@@ -123,10 +103,9 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
   }
 }
 
-File *parse_file(char *filepath) {
+void parse_program(File *file, char *json_data) {
 
-  File *file = malloc(sizeof(File));
-  cJSON *json = parse_json(filepath);
+  cJSON *json = parse_json(json_data);
 
   if (cJSON_IsObject(json)) {
     cJSON *child = NULL;
@@ -143,5 +122,31 @@ File *parse_file(char *filepath) {
   }
 
   cJSON_Delete(json);
-  return file;
+};
+
+void parse_file(File *file, char *filepath) {
+
+  FILE *code = fopen(filepath, "r");
+
+  if (code == NULL) {
+    perror("Error opening file");
+  }
+
+  fseek(code, 0, SEEK_END);
+
+  long file_size = ftell(code);
+  fseek(code, 0, SEEK_SET);
+
+  char *json_data = (char *)malloc(file_size + 1);
+
+  if (json_data == NULL) {
+    perror("Memory allocation error");
+    fclose(code);
+  }
+
+  fread(json_data, 1, file_size, code);
+  fclose(code);
+
+  json_data[file_size] = '\0';
+  parse_program(file, json_data);
 }

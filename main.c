@@ -59,7 +59,16 @@ Val eval(Term *term) {
 }
 
 int main() {
-  File *file = parse_file("examples/main.json");
+
+  File *file = malloc(sizeof(File));
+
+  // char buffer[1024];
+  // if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+  //   printf("with buffer");
+  //   parse_program(file, buffer);
+  // }
+
+  parse_file(file, "examples/main.json");
 
   eval(&file->expression);
 
