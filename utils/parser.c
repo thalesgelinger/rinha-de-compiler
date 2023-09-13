@@ -1,6 +1,7 @@
 
 #include "../models/data.h"
 #include "cJSON.h"
+#include "printer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,18 +70,55 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->kind = Print;
       } else if (strcmp(child->valuestring, "Str") == 0) {
         term->kind = Str;
+      } else if (strcmp(child->valuestring, "Binary") == 0) {
+        term->kind = Binary;
+      } else if (strcmp(child->valuestring, "Int") == 0) {
+        term->kind = Int;
       }
-    } else if (strcmp(key, "value") == 0) {
-      if (term->kind == Print) {
+    } else if (strcmp(key, "location") == 0) {
+      parse_location(&term->location, child);
+    }
+
+    switch (term->kind) {
+
+    case Print: {
+      if (strcmp(key, "value") == 0) {
         Term *printTerm = malloc(sizeof(Term));
         parse_expression(printTerm, child);
         term->data.printTerm.value = printTerm;
-      } else if (term->kind == Str) {
+      }
+    } break;
+
+    case Str:
+      if (strcmp(key, "value") == 0) {
         strcpy(term->data.strTerm.value, child->valuestring);
       }
+      break;
 
-    } else if (strcmp(key, "location") == 0) {
-      parse_location(&term->location, child);
+    case Binary: {
+      if (strcmp(key, "lhs") == 0) {
+        Term *lhs = malloc(sizeof(Term));
+        parse_expression(lhs, child);
+        term->data.binaryTerm.lhs = lhs;
+      } else if (strcmp(key, "rhs") == 0) {
+        Term *rhs = malloc(sizeof(Term));
+        parse_expression(rhs, child);
+        term->data.binaryTerm.rhs = rhs;
+      } else if (strcmp(key, "op") == 0) {
+        char *value = child->valuestring;
+        if (strcmp(value, "Add")) {
+          term->data.binaryTerm.op = Add;
+        } else if (strcmp(value, "Mul")) {
+          term->data.binaryTerm.op = Mul;
+        }
+      }
+
+    } break;
+    case Int:
+      if (strcmp(key, "value") == 0) {
+        term->data.intTerm.value = child->valueint;
+      }
+      break;
     }
   }
 }

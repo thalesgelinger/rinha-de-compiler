@@ -13,11 +13,17 @@ void print_term(Term *term) {
   printf("%u\n", term->kind);
   print_location(&term->location);
   switch (term->kind) {
-
   case Print:
     print_term(term->data.printTerm.value);
   case Str:
     printf("%s", term->data.strTerm.value);
+    break;
+  case Binary:
+    print_term(term->data.binaryTerm.lhs);
+    print_term(term->data.binaryTerm.rhs);
+    break;
+  case Int:
+    printf("%d", term->data.intTerm.value);
     break;
   }
 }
