@@ -1,25 +1,25 @@
 {
-    "name": "main.rinha",
-    "expression": {
-        "kind": "Print",
-        "value": {
-            "kind": "Str",
-            "value": "Hello,  World",
-            "location": {
-                "start": 6,
-                "end": 21,
-                "filename": "main.rinha"
-            }
-        },
-        "location": {
-            "start": 0,
-            "end": 22,
-            "filename": "main.rinha"
-        }
+  "name": "examples/main.rinha",
+  "expression": {
+    "kind": "Print",
+    "value": {
+      "kind": "Str",
+      "value": "Hello, my interpreter",
+      "location": {
+        "start": 6,
+        "end": 29,
+        "filename": "examples/main.rinha"
+      }
     },
     "location": {
-        "start": 0,
-        "end": 22,
-        "filename": "main.rinha"
+      "start": 0,
+      "end": 30,
+      "filename": "examples/main.rinha"
     }
+  },
+  "location": {
+    "start": 0,
+    "end": 30,
+    "filename": "examples/main.rinha"
+  }
 }
