@@ -7,28 +7,26 @@
 
 cJSON *parse_json(char *filepath) {
 
-  FILE *file = fopen(filepath, "r"); // Open the JSON file in read mode
+  FILE *file = fopen(filepath, "r");
 
   if (file == NULL) {
     perror("Error opening file");
   }
 
   fseek(file, 0, SEEK_END);
-  long file_size = ftell(file); // Get the size of the file
+  long file_size = ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  char *json_data =
-      (char *)malloc(file_size + 1); // Allocate memory to store the JSON data
+  char *json_data = (char *)malloc(file_size + 1);
   if (json_data == NULL) {
     perror("Memory allocation error");
     fclose(file);
   }
 
-  fread(json_data, 1, file_size, file); // Read the JSON data from the file
+  fread(json_data, 1, file_size, file);
   fclose(file);
-  json_data[file_size] = '\0'; // Null-terminate the data
+  json_data[file_size] = '\0';
 
-  // Parse the JSON data using cJSON
   cJSON *root = cJSON_Parse(json_data);
 
   if (root == NULL) {
@@ -36,7 +34,7 @@ cJSON *parse_json(char *filepath) {
     if (error_ptr != NULL) {
       fprintf(stderr, "Error before: %s\n", error_ptr);
     }
-    cJSON_Delete(root); // Clean up and free allocated memory
+    cJSON_Delete(root);
     free(json_data);
   }
 
