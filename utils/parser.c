@@ -86,10 +86,14 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->data.binaryTerm.rhs = rhs;
       } else if (strcmp(key, "op") == 0) {
         char *value = child->valuestring;
-        if (strcmp(value, "Add")) {
+        if (strcmp(value, "Add") == 0) {
           term->data.binaryTerm.op = Add;
-        } else if (strcmp(value, "Mul")) {
+        } else if (strcmp(value, "Mul") == 0) {
           term->data.binaryTerm.op = Mul;
+        } else if (strcmp(value, "Sub") == 0) {
+          term->data.binaryTerm.op = Sub;
+        } else if (strcmp(value, "Div") == 0) {
+          term->data.binaryTerm.op = Div;
         }
       }
 
@@ -111,6 +115,7 @@ void parse_program(File *file, char *json_data) {
     cJSON *child = NULL;
     cJSON_ArrayForEach(child, json) {
       char *key = child->string;
+
       if (strcmp(key, "name") == 0) {
         strcpy(file->name, child->valuestring);
       } else if (strcmp(key, "expression") == 0) {

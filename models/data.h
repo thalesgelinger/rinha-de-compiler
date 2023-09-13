@@ -3,6 +3,9 @@
 #define DATA_H
 
 #include <stdint.h>
+
+#define FILENAME_SIZE 30
+
 typedef enum TermKind {
   Print,
   Str,
@@ -11,7 +14,7 @@ typedef enum TermKind {
 } TermKind;
 
 typedef struct Location {
-  char filename[20];
+  char filename[FILENAME_SIZE];
   int start;
   int end;
 } Location;
@@ -67,7 +70,7 @@ typedef struct Term {
 } Term;
 
 typedef struct File {
-  char name[20];
+  char name[FILENAME_SIZE];
   Term expression;
   Location location;
 } File;

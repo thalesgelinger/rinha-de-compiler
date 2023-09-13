@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+int i = 0;
+
 Val eval(Term *term) {
   Val result;
 
@@ -15,11 +17,11 @@ Val eval(Term *term) {
     switch (printValue.type) {
     case int_type:
       printf("%d", printValue.value.intValue);
+      break;
     case string_type:
       printf("%s", printValue.value.strValue);
       break;
     }
-
   } break;
   case Str:
     result.type = string_type;
@@ -27,24 +29,40 @@ Val eval(Term *term) {
     break;
   case Binary: {
 
+    Val lhs = eval(term->data.binaryTerm.lhs);
+
+    Val rhs = eval(term->data.binaryTerm.rhs);
+
     result.type = int_type;
-    int lhs = eval(term->data.binaryTerm.lhs).value.intValue;
-    int rhs = eval(term->data.binaryTerm.rhs).value.intValue;
     switch (term->data.binaryTerm.op) {
     case Add:
-      result.value.intValue = lhs + rhs;
+      result.value.intValue = lhs.value.intValue + rhs.value.intValue;
+      break;
     case Sub:
+      result.value.intValue = lhs.value.intValue - rhs.value.intValue;
+      break;
     case Mul:
-      result.value.intValue = lhs * rhs;
+      result.value.intValue = lhs.value.intValue * rhs.value.intValue;
+      break;
     case Div:
+      result.value.intValue = lhs.value.intValue / rhs.value.intValue;
+      break;
     case Rem:
+      break;
     case Eq:
+      break;
     case Neq:
+      break;
     case Lt:
+      break;
     case Gt:
+      break;
     case Lte:
+      break;
     case Gte:
+      break;
     case And:
+      break;
     case Or:
       break;
     }
@@ -62,13 +80,7 @@ int main() {
 
   File *file = malloc(sizeof(File));
 
-  // char buffer[1024];
-  // if (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-  //   printf("with buffer");
-  //   parse_program(file, buffer);
-  // }
-
-  parse_file(file, "examples/main.json");
+  parse_file(file, "examples/prints.json");
 
   eval(&file->expression);
 
