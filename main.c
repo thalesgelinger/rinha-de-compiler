@@ -22,6 +22,9 @@ Val eval(Term *term) {
     case bool_type:
       printf("%s", printValue.value.boolValue ? "true" : "false");
       break;
+    case tuple_type:
+      printf("(term, term)");
+      break;
     }
   } break;
   case Str:
@@ -153,6 +156,9 @@ Val eval(Term *term) {
   case Second:
     break;
   case Tuple:
+    result.type = tuple_type;
+    result.value.tupleValue.first = term->data.tupleTerm.first;
+    result.value.tupleValue.second = term->data.tupleTerm.second;
     break;
   case Var:
     break;
@@ -165,7 +171,7 @@ int main() {
 
   File *file = malloc(sizeof(File));
 
-  parse_file(file, "examples/if.json");
+  parse_file(file, "examples/tuple.json");
 
   eval(&file->expression);
 

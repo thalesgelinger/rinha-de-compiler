@@ -1,0 +1,42 @@
+{
+    "name": "examples/tuple.rinha",
+    "expression": {
+        "kind": "Print",
+        "value": {
+            "kind": "Tuple",
+            "first": {
+                "kind": "Str",
+                "value": "a",
+                "location": {
+                    "start": 7,
+                    "end": 10,
+                    "filename": "examples/tuple.rinha"
+                }
+            },
+            "second": {
+                "kind": "Int",
+                "value": 2,
+                "location": {
+                    "start": 11,
+                    "end": 12,
+                    "filename": "examples/tuple.rinha"
+                }
+            },
+            "location": {
+                "start": 6,
+                "end": 13,
+                "filename": "examples/tuple.rinha"
+            }
+        },
+        "location": {
+            "start": 0,
+            "end": 14,
+            "filename": "examples/tuple.rinha"
+        }
+    },
+    "location": {
+        "start": 0,
+        "end": 14,
+        "filename": "examples/tuple.rinha"
+    }
+}

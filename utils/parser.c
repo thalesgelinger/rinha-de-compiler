@@ -59,6 +59,8 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->kind = Bool;
       } else if (strcmp(child->valuestring, "If") == 0) {
         term->kind = If;
+      } else if (strcmp(child->valuestring, "Tuple") == 0) {
+        term->kind = Tuple;
       }
     } else if (strcmp(key, "location") == 0) {
       parse_location(&term->location, child);
@@ -154,8 +156,16 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
       break;
     case Second:
       break;
-    case Tuple:
-      break;
+    case Tuple: {
+      Term *auxTerm = malloc(sizeof(Term));
+      if (strcmp(key, "first") == 0) {
+        parse_expression(auxTerm, child);
+        term->data.tupleTerm.first = auxTerm;
+      } else if (strcmp(key, "second") == 0) {
+        parse_expression(auxTerm, child);
+        term->data.tupleTerm.second = auxTerm;
+      }
+    } break;
     case Var:
       break;
     }

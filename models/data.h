@@ -151,16 +151,21 @@ typedef struct File {
   Location location;
 } File;
 
-typedef union {
+typedef union Value {
   int32_t intValue;
   char strValue[50];
   bool boolValue;
+  struct {
+    Term *first;
+    Term *second;
+  } tupleValue;
 } Value;
 
 typedef enum Type {
   int_type,
   string_type,
   bool_type,
+  tuple_type,
 } Type;
 
 typedef struct {
