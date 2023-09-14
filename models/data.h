@@ -132,6 +132,7 @@ typedef struct Term {
     BinaryTerm binaryTerm;
     IntTerm intTerm;
     BoolTerm boolTerm;
+
     CallTerm callTerm;
     FunctionTerm functionTerm;
     LetTerm letTerm;

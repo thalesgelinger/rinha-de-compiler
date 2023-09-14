@@ -122,6 +122,22 @@ Val eval(Term *term) {
     result.type = bool_type;
     result.value.boolValue = term->data.boolTerm.value;
     break;
+  case Call:
+    break;
+  case Function:
+    break;
+  case Let:
+    break;
+  case If:
+    break;
+  case First:
+    break;
+  case Second:
+    break;
+  case Tuple:
+    break;
+  case Var:
+    break;
   }
 
   return result;

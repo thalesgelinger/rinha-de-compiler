@@ -129,6 +129,22 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->data.boolTerm.value = cJSON_IsTrue(child) ? true : false;
       }
       break;
+    case Call:
+      break;
+    case Function:
+      break;
+    case Let:
+      break;
+    case If:
+      break;
+    case First:
+      break;
+    case Second:
+      break;
+    case Tuple:
+      break;
+    case Var:
+      break;
     }
   }
 }

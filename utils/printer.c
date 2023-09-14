@@ -30,6 +30,22 @@ void print_term(Term *term) {
   case Bool:
     printf("Bool: %d\n", term->data.boolTerm.value);
     break;
+  case Call:
+    break;
+  case Function:
+    break;
+  case Let:
+    break;
+  case If:
+    break;
+  case First:
+    break;
+  case Second:
+    break;
+  case Tuple:
+    break;
+  case Var:
+    break;
   }
 }
 
