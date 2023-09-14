@@ -128,8 +128,14 @@ Val eval(Term *term) {
     break;
   case Let:
     break;
-  case If:
-    break;
+  case If: {
+    Val condition = eval(term->data.ifTerm.condition);
+    if (condition.value.boolValue) {
+      result = eval(term->data.ifTerm.then);
+    } else {
+      result = eval(term->data.ifTerm.otherwise);
+    }
+  } break;
   case First:
     break;
   case Second:
@@ -147,7 +153,7 @@ int main() {
 
   File *file = malloc(sizeof(File));
 
-  parse_file(file, "examples/prints.json");
+  parse_file(file, "examples/if.json");
 
   eval(&file->expression);
 
