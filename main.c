@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+void raise(char *message) {
+  fprintf(stderr, "%s", message);
+  exit(EXIT_FAILURE);
+}
+
 Val eval(Term *term) {
   Val result;
 
@@ -84,6 +89,9 @@ Val eval(Term *term) {
           result.value.boolValue =
               strcmp(lhs.value.strValue, rhs.value.strValue) == 0;
           break;
+        case tuple_type:
+          result.value.boolValue = false;
+          break;
         }
       }
       break;
@@ -99,6 +107,9 @@ Val eval(Term *term) {
         case string_type:
           result.value.boolValue =
               strcmp(lhs.value.strValue, rhs.value.strValue) != 0;
+          break;
+        case tuple_type:
+          result.value.boolValue = true;
           break;
         }
       }
@@ -167,15 +178,21 @@ Val eval(Term *term) {
   return result;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    printf("Missing rinha ast path as <argument>\n");
+    return 1;
+  }
+
+  char *path = argv[1];
 
   File *file = malloc(sizeof(File));
 
-  parse_file(file, "examples/tuple.json");
+  parse_file(file, path);
 
   eval(&file->expression);
 
   free(file);
 
-  return 0;
+  return 1;
 }
