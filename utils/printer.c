@@ -10,20 +10,25 @@ void print_location(Location *location) {
 }
 
 void print_term(Term *term) {
-  printf("%u\n", term->kind);
+  printf("Kind: %u\n", term->kind);
   print_location(&term->location);
   switch (term->kind) {
   case Print:
+    printf("Print");
     print_term(term->data.printTerm.value);
   case Str:
-    printf("%s", term->data.strTerm.value);
+    printf("Str: %s\n", term->data.strTerm.value);
     break;
   case Binary:
+    printf("Binary");
     print_term(term->data.binaryTerm.lhs);
     print_term(term->data.binaryTerm.rhs);
     break;
   case Int:
-    printf("%d", term->data.intTerm.value);
+    printf("Int: %d\n", term->data.intTerm.value);
+    break;
+  case Bool:
+    printf("Bool: %d\n", term->data.boolTerm.value);
     break;
   }
 }

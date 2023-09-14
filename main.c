@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int i = 0;
-
 Val eval(Term *term) {
   Val result;
 
@@ -21,6 +19,9 @@ Val eval(Term *term) {
     case string_type:
       printf("%s", printValue.value.strValue);
       break;
+    case bool_type:
+      printf("%s", printValue.value.boolValue ? "true" : "false");
+      break;
     }
   } break;
   case Str:
@@ -33,43 +34,90 @@ Val eval(Term *term) {
 
     Val rhs = eval(term->data.binaryTerm.rhs);
 
-    result.type = int_type;
     switch (term->data.binaryTerm.op) {
     case Add:
+      result.type = int_type;
       result.value.intValue = lhs.value.intValue + rhs.value.intValue;
       break;
     case Sub:
+      result.type = int_type;
       result.value.intValue = lhs.value.intValue - rhs.value.intValue;
       break;
     case Mul:
+      result.type = int_type;
       result.value.intValue = lhs.value.intValue * rhs.value.intValue;
       break;
     case Div:
+      result.type = int_type;
       result.value.intValue = lhs.value.intValue / rhs.value.intValue;
       break;
     case Rem:
+      result.type = int_type;
+      result.value.intValue = lhs.value.boolValue % rhs.value.intValue;
       break;
     case Eq:
+      result.type = bool_type;
+      if (lhs.type == rhs.type) {
+        switch (lhs.type) {
+        case int_type:
+          result.value.boolValue = lhs.value.intValue == rhs.value.intValue;
+          break;
+        case bool_type:
+          result.value.boolValue = lhs.value.boolValue == rhs.value.boolValue;
+          break;
+        case string_type:
+          result.value.boolValue =
+              strcmp(lhs.value.strValue, rhs.value.strValue) == 0;
+          break;
+        }
+      }
       break;
     case Neq:
+      result.type = bool_type;
+      switch (result.type) {
+      case int_type:
+        result.value.boolValue = lhs.value.intValue != rhs.value.intValue;
+      case string_type:
+        result.value.boolValue =
+            strcmp(lhs.value.strValue, rhs.value.strValue) == 1;
+      case bool_type:
+        result.value.boolValue = lhs.value.boolValue != rhs.value.boolValue;
+        break;
+      }
       break;
     case Lt:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue < rhs.value.boolValue;
       break;
     case Gt:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue > rhs.value.boolValue;
       break;
     case Lte:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue <= rhs.value.boolValue;
       break;
     case Gte:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue >= rhs.value.boolValue;
       break;
     case And:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue && rhs.value.boolValue;
       break;
     case Or:
+      result.type = bool_type;
+      result.value.boolValue = lhs.value.boolValue || rhs.value.boolValue;
       break;
     }
   } break;
   case Int:
     result.type = int_type;
     result.value.intValue = term->data.intTerm.value;
+    break;
+  case Bool:
+    result.type = bool_type;
+    result.value.boolValue = term->data.boolTerm.value;
     break;
   }
 

@@ -2,6 +2,7 @@
 #include "../models/data.h"
 #include "cJSON.h"
 #include "printer.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,6 +55,8 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->kind = Binary;
       } else if (strcmp(child->valuestring, "Int") == 0) {
         term->kind = Int;
+      } else if (strcmp(child->valuestring, "Bool") == 0) {
+        term->kind = Bool;
       }
     } else if (strcmp(key, "location") == 0) {
       parse_location(&term->location, child);
@@ -94,6 +97,24 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
           term->data.binaryTerm.op = Sub;
         } else if (strcmp(value, "Div") == 0) {
           term->data.binaryTerm.op = Div;
+        } else if (strcmp(value, "Rem") == 0) {
+          term->data.binaryTerm.op = Rem;
+        } else if (strcmp(value, "Eq") == 0) {
+          term->data.binaryTerm.op = Eq;
+        } else if (strcmp(value, "Neq") == 0) {
+          term->data.binaryTerm.op = Neq;
+        } else if (strcmp(value, "Lt") == 0) {
+          term->data.binaryTerm.op = Lt;
+        } else if (strcmp(value, "Gt") == 0) {
+          term->data.binaryTerm.op = Gt;
+        } else if (strcmp(value, "Lte") == 0) {
+          term->data.binaryTerm.op = Lte;
+        } else if (strcmp(value, "Gte") == 0) {
+          term->data.binaryTerm.op = Gte;
+        } else if (strcmp(value, "And") == 0) {
+          term->data.binaryTerm.op = And;
+        } else if (strcmp(value, "Or") == 0) {
+          term->data.binaryTerm.op = Or;
         }
       }
 
@@ -101,6 +122,11 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
     case Int:
       if (strcmp(key, "value") == 0) {
         term->data.intTerm.value = child->valueint;
+      }
+      break;
+    case Bool:
+      if (strcmp(key, "value") == 0) {
+        term->data.boolTerm.value = cJSON_IsTrue(child) ? true : false;
       }
       break;
     }

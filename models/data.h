@@ -1,8 +1,9 @@
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #ifndef DATA_H
 #define DATA_H
-
-#include <stdint.h>
 
 #define FILENAME_SIZE 30
 
@@ -11,6 +12,7 @@ typedef enum TermKind {
   Str,
   Binary,
   Int,
+  Bool,
 } TermKind;
 
 typedef struct Location {
@@ -28,6 +30,11 @@ typedef struct StrTerm {
   TermKind kind;
   char value[50];
 } StrTerm;
+
+typedef struct BoolTerm {
+  TermKind kind;
+  bool value;
+} BoolTerm;
 
 typedef enum BinaryOp {
   Add,
@@ -65,6 +72,7 @@ typedef struct Term {
     StrTerm strTerm;
     BinaryTerm binaryTerm;
     IntTerm intTerm;
+    BoolTerm boolTerm;
   } data;
   Location location;
 } Term;
@@ -78,11 +86,13 @@ typedef struct File {
 typedef union {
   int32_t intValue;
   char strValue[50];
+  bool boolValue;
 } Value;
 
 typedef enum Type {
   int_type,
   string_type,
+  bool_type,
 } Type;
 
 typedef struct {
