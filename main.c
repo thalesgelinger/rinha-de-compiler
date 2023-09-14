@@ -36,8 +36,20 @@ Val eval(Term *term) {
 
     switch (term->data.binaryTerm.op) {
     case Add:
-      result.type = int_type;
-      result.value.intValue = lhs.value.intValue + rhs.value.intValue;
+      if (lhs.type == string_type || rhs.type == string_type) {
+        result.type = string_type;
+        char *lhs_str = lhs.value.strValue;
+        char *rhs_str = rhs.value.strValue;
+        if (lhs.type == int_type) {
+          sprintf(lhs_str, "%d", lhs.value.intValue);
+        } else if (rhs.type == int_type) {
+          sprintf(rhs_str, "%d", rhs.value.intValue);
+        }
+        strcpy(result.value.strValue, strcat(lhs_str, rhs_str));
+      } else {
+        result.type = int_type;
+        result.value.intValue = lhs.value.intValue + rhs.value.intValue;
+      }
       break;
     case Sub:
       result.type = int_type;
