@@ -13,6 +13,14 @@ typedef enum TermKind {
   Binary,
   Int,
   Bool,
+  Call,
+  Function,
+  Let,
+  If,
+  First,
+  Second,
+  Tuple,
+  Var
 } TermKind;
 
 typedef struct Location {
@@ -35,6 +43,12 @@ typedef struct BoolTerm {
   TermKind kind;
   bool value;
 } BoolTerm;
+
+typedef struct CallTerm {
+  TermKind kind;
+  struct Term *calle;
+  struct Term **arguments;
+} CallTerm;
 
 typedef enum BinaryOp {
   Add,
@@ -65,6 +79,51 @@ typedef struct IntTerm {
   int32_t value;
 } IntTerm;
 
+typedef struct Parameter {
+  char text[20];
+  Location location;
+} Parameter;
+
+typedef struct FunctionTerm {
+  TermKind kind;
+  Parameter *parameters;
+} FunctionTerm;
+
+typedef struct LetTerm {
+  TermKind kind;
+  Parameter name;
+  struct Term *value;
+  struct Term *next;
+} LetTerm;
+
+typedef struct IfTerm {
+  TermKind kind;
+  struct Term *condition;
+  struct Term *then;
+  struct Term *otherwise;
+} IfTerm;
+
+typedef struct FirstTerm {
+  TermKind kind;
+  struct Term *value;
+} FirstTerm;
+
+typedef struct SecondTerm {
+  TermKind kind;
+  struct Term *value;
+} SecondTerm;
+
+typedef struct VarTerm {
+  TermKind kind;
+  char text[20];
+} VarTerm;
+
+typedef struct TupleTerm {
+  TermKind kind;
+  struct Term *first;
+  struct Term *second;
+} TupleTerm;
+
 typedef struct Term {
   TermKind kind;
   union {
@@ -73,6 +132,14 @@ typedef struct Term {
     BinaryTerm binaryTerm;
     IntTerm intTerm;
     BoolTerm boolTerm;
+    CallTerm callTerm;
+    FunctionTerm functionTerm;
+    LetTerm letTerm;
+    IfTerm ifTerm;
+    FirstTerm firstTerm;
+    SecondTerm secondTerm;
+    TupleTerm tupleTerm;
+    VarTerm varTerm;
   } data;
   Location location;
 } Term;
