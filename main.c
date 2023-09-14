@@ -73,33 +73,36 @@ Val eval(Term *term) {
       }
       break;
     case Neq:
-      result.type = bool_type;
-      switch (result.type) {
-      case int_type:
-        result.value.boolValue = lhs.value.intValue != rhs.value.intValue;
-      case string_type:
-        result.value.boolValue =
-            strcmp(lhs.value.strValue, rhs.value.strValue) == 1;
-      case bool_type:
-        result.value.boolValue = lhs.value.boolValue != rhs.value.boolValue;
-        break;
+      if (lhs.type == rhs.type) {
+        switch (lhs.type) {
+        case int_type:
+          result.value.boolValue = lhs.value.intValue != rhs.value.intValue;
+          break;
+        case bool_type:
+          result.value.boolValue = lhs.value.boolValue != rhs.value.boolValue;
+          break;
+        case string_type:
+          result.value.boolValue =
+              strcmp(lhs.value.strValue, rhs.value.strValue) != 0;
+          break;
+        }
       }
       break;
     case Lt:
       result.type = bool_type;
-      result.value.boolValue = lhs.value.boolValue < rhs.value.boolValue;
+      result.value.boolValue = lhs.value.intValue < rhs.value.intValue;
       break;
     case Gt:
       result.type = bool_type;
-      result.value.boolValue = lhs.value.boolValue > rhs.value.boolValue;
+      result.value.boolValue = lhs.value.intValue > rhs.value.intValue;
       break;
     case Lte:
       result.type = bool_type;
-      result.value.boolValue = lhs.value.boolValue <= rhs.value.boolValue;
+      result.value.boolValue = lhs.value.intValue <= rhs.value.intValue;
       break;
     case Gte:
       result.type = bool_type;
-      result.value.boolValue = lhs.value.boolValue >= rhs.value.boolValue;
+      result.value.boolValue = lhs.value.intValue >= rhs.value.intValue;
       break;
     case And:
       result.type = bool_type;

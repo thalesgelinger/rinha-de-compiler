@@ -1,1 +1,1 @@
-print(true && true)
+print(5 > 3)
