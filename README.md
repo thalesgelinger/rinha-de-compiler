@@ -27,9 +27,9 @@ My goal is making it possible to run the ast provided into a C interpreter
 - [x] Bool
 - [x] Tuple
 - [ ] Function
-- [ ] Let
+- [x] Let
 - [ ] Call
-- [ ] Var
+- [x] Var
 - [ ] First
 - [ ] Second
 

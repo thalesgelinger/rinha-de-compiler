@@ -91,7 +91,7 @@ typedef struct FunctionTerm {
 
 typedef struct LetTerm {
   TermKind kind;
-  Parameter name;
+  struct Parameter *name;
   struct Term *value;
   struct Term *next;
 } LetTerm;

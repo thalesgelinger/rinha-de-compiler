@@ -31,21 +31,31 @@ void print_term(Term *term) {
     printf("Bool: %d\n", term->data.boolTerm.value);
     break;
   case Call:
+    printf("Call Print");
     break;
   case Function:
+    printf("Function Print");
     break;
   case Let:
+    printf("Let Print: %s", term->data.letTerm.name->text);
     break;
   case If:
+    printf("If Print");
     break;
   case First:
+    printf("First Print");
     break;
   case Second:
+    printf("Second Print");
     break;
   case Tuple:
+    printf("Tuple Print");
     break;
   case Var:
+    printf("Var Print: %s", term->data.varTerm.text);
     break;
+  default:
+    printf("Unavailable term");
   }
 }
 

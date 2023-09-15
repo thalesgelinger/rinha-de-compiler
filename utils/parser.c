@@ -40,6 +40,20 @@ void parse_location(Location *location, cJSON *jsonLocation) {
   }
 }
 
+void parse_parameter(Parameter *parameter, cJSON *jsonExpression) {
+
+  cJSON *child = NULL;
+
+  cJSON_ArrayForEach(child, jsonExpression) {
+    char *key = child->string;
+    if (strcmp(key, "text") == 0) {
+      strcpy(parameter->text, child->valuestring);
+    } else if (strcmp(key, "location") == 0) {
+      parse_location(&parameter->location, child);
+    }
+  }
+}
+
 void parse_expression(Term *term, cJSON *jsonExpression) {
 
   cJSON *child = NULL;
@@ -61,6 +75,10 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->kind = If;
       } else if (strcmp(child->valuestring, "Tuple") == 0) {
         term->kind = Tuple;
+      } else if (strcmp(child->valuestring, "Let") == 0) {
+        term->kind = Let;
+      } else if (strcmp(child->valuestring, "Var") == 0) {
+        term->kind = Var;
       }
     } else if (strcmp(key, "location") == 0) {
       parse_location(&term->location, child);
@@ -133,12 +151,26 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->data.boolTerm.value = cJSON_IsTrue(child) ? true : false;
       }
       break;
-    case Call:
-      break;
-    case Function:
-      break;
-    case Let:
-      break;
+    case Let: {
+      Term *auxTerm = malloc(sizeof(Term));
+      Parameter *parameter = malloc(sizeof(Parameter));
+      if (strcmp(key, "name") == 0) {
+        parse_parameter(parameter, child);
+        term->data.letTerm.name = parameter;
+      } else if (strcmp(key, "value") == 0) {
+        parse_expression(auxTerm, child);
+        term->data.letTerm.value = auxTerm;
+      } else if (strcmp(key, "next") == 0) {
+        parse_expression(auxTerm, child);
+        term->data.letTerm.next = auxTerm;
+      }
+    } break;
+    case Var: {
+      Term *auxTerm = malloc(sizeof(Term));
+      if (strcmp(key, "text") == 0) {
+        strcpy(term->data.varTerm.text, child->valuestring);
+      }
+    } break;
     case If: {
       Term *auxTerm = malloc(sizeof(Term));
       if (strcmp(key, "condition") == 0) {
@@ -166,7 +198,9 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->data.tupleTerm.second = auxTerm;
       }
     } break;
-    case Var:
+    case Call:
+      break;
+    case Function:
       break;
     }
   }

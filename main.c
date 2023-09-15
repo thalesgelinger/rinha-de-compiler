@@ -1,5 +1,6 @@
 #include "models/data.h"
 #include "utils/cJSON.h"
+#include "utils/hash.h"
 #include "utils/parser.h"
 #include "utils/printer.h"
 #include <stdio.h>
@@ -11,12 +12,12 @@ void raise(char *message) {
   exit(EXIT_FAILURE);
 }
 
-Val eval(Term *term) {
+Val eval(Term *term, Hash *variables) {
   Val result;
 
   switch (term->kind) {
   case Print: {
-    Val printValue = eval(term->data.printTerm.value);
+    Val printValue = eval(term->data.printTerm.value, variables);
     switch (printValue.type) {
     case int_type:
       printf("%d", printValue.value.intValue);
@@ -38,9 +39,9 @@ Val eval(Term *term) {
     break;
   case Binary: {
 
-    Val lhs = eval(term->data.binaryTerm.lhs);
+    Val lhs = eval(term->data.binaryTerm.lhs, variables);
 
-    Val rhs = eval(term->data.binaryTerm.rhs);
+    Val rhs = eval(term->data.binaryTerm.rhs, variables);
 
     switch (term->data.binaryTerm.op) {
     case Add:
@@ -69,6 +70,7 @@ Val eval(Term *term) {
       break;
     case Div:
       result.type = int_type;
+      printf("\n");
       result.value.intValue = lhs.value.intValue / rhs.value.intValue;
       break;
     case Rem:
@@ -152,14 +154,27 @@ Val eval(Term *term) {
     break;
   case Function:
     break;
-  case Let:
-    break;
-  case If: {
-    Val condition = eval(term->data.ifTerm.condition);
-    if (condition.value.boolValue) {
-      result = eval(term->data.ifTerm.then);
+  case Let: {
+
+    Val val = eval(term->data.letTerm.value, variables);
+    insert_node(variables, term->data.letTerm.name->text, &val);
+    eval(term->data.letTerm.next, variables);
+  } break;
+  case Var: {
+    Val *var = search(variables, term->data.varTerm.text);
+    if (var == NULL) {
+      // TODO: Throw Error
     } else {
-      result = eval(term->data.ifTerm.otherwise);
+      result.type = var->type;
+      result.value = var->value;
+    }
+  } break;
+  case If: {
+    Val condition = eval(term->data.ifTerm.condition, variables);
+    if (condition.value.boolValue) {
+      result = eval(term->data.ifTerm.then, variables);
+    } else {
+      result = eval(term->data.ifTerm.otherwise, variables);
     }
   } break;
   case First:
@@ -170,8 +185,6 @@ Val eval(Term *term) {
     result.type = tuple_type;
     result.value.tupleValue.first = term->data.tupleTerm.first;
     result.value.tupleValue.second = term->data.tupleTerm.second;
-    break;
-  case Var:
     break;
   }
 
@@ -187,10 +200,11 @@ int main(int argc, char *argv[]) {
   char *path = argv[1];
 
   File *file = malloc(sizeof(File));
+  Hash *variables = malloc(sizeof(Hash));
 
   parse_file(file, path);
 
-  eval(&file->expression);
+  eval(&file->expression, variables);
 
   free(file);
 
