@@ -18,19 +18,55 @@ Val eval(Term *term, Hash *variables) {
   switch (term->kind) {
   case Print: {
     Val printValue = eval(term->data.printTerm.value, variables);
+    result = printValue;
     switch (printValue.type) {
     case int_type:
-      printf("%d", printValue.value.intValue);
+      printf("%d\n", printValue.value.intValue);
       break;
     case string_type:
-      printf("%s", printValue.value.strValue);
+      printf("%s\n", printValue.value.strValue);
       break;
     case bool_type:
-      printf("%s", printValue.value.boolValue ? "true" : "false");
+      printf("%s\n", printValue.value.boolValue ? "true" : "false");
       break;
-    case tuple_type:
-      printf("(term, term)");
-      break;
+    case tuple_type: {
+      char *firstTerm = malloc(sizeof(char));
+      char *secondTerm = malloc(sizeof(char));
+      Val firstVal = eval(printValue.value.tupleValue.first, variables);
+      Val secondVal = eval(printValue.value.tupleValue.second, variables);
+
+      switch (firstVal.type) {
+      case int_type:
+        sprintf(firstTerm, "%d", firstVal.value.intValue);
+        break;
+      case string_type:
+        strcpy(firstTerm, firstVal.value.strValue);
+        break;
+      case bool_type:
+        strcpy(firstTerm, firstVal.value.boolValue ? "true" : "false");
+        break;
+      case tuple_type:
+        // TODO
+        break;
+      }
+
+      switch (secondVal.type) {
+      case int_type:
+        sprintf(secondTerm, "%d", secondVal.value.intValue);
+        break;
+      case string_type:
+        strcpy(secondTerm, secondVal.value.strValue);
+        break;
+      case bool_type:
+        strcpy(secondTerm, secondVal.value.boolValue ? "true" : "false");
+        break;
+      case tuple_type:
+        // TODO
+        break;
+      }
+
+      printf("(%s, %s)\n", firstTerm, secondTerm);
+    } break;
     }
   } break;
   case Str:

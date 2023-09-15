@@ -1,2 +1,2 @@
-./compile && ./rinha examples/first.json
+./compile && ./rinha examples/print.json
 
