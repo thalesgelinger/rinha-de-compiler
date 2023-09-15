@@ -155,7 +155,6 @@ Val eval(Term *term, Hash *variables) {
   case Function:
     break;
   case Let: {
-
     Val val = eval(term->data.letTerm.value, variables);
     insert_node(variables, term->data.letTerm.name->text, &val);
     eval(term->data.letTerm.next, variables);
@@ -177,10 +176,23 @@ Val eval(Term *term, Hash *variables) {
       result = eval(term->data.ifTerm.otherwise, variables);
     }
   } break;
-  case First:
-    break;
-  case Second:
-    break;
+  case First: {
+    Val val = eval(term->data.firstTerm.value, variables);
+    if (val.type == tuple_type) {
+      Term *first = val.value.tupleValue.first;
+      result = eval(first, variables);
+    } else {
+      // TODO: throw Error
+    }
+  } break;
+  case Second: {
+    Val val = eval(term->data.secondTerm.value, variables);
+    if (val.type == tuple_type) {
+      result = eval(val.value.tupleValue.second, variables);
+    } else {
+      // TODO: throw Error
+    }
+  } break;
   case Tuple:
     result.type = tuple_type;
     result.value.tupleValue.first = term->data.tupleTerm.first;

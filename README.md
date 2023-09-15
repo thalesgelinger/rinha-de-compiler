@@ -30,8 +30,8 @@ My goal is making it possible to run the ast provided into a C interpreter
 - [x] Let
 - [ ] Call
 - [x] Var
-- [ ] First
-- [ ] Second
+- [x] First
+- [x] Second
 
 Binary Options
 - [x] Add

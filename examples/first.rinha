@@ -1,0 +1,2 @@
+let s = second(("a",2)) + 10;
+print(s)
