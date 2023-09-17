@@ -54,6 +54,19 @@ void parse_parameter(Parameter *parameter, cJSON *jsonExpression) {
   }
 }
 
+Parameters *parse_parameters(cJSON *child) {
+  cJSON *parameterJson = NULL;
+  Parameters *parameters = NULL;
+  Parameter *auxParameter = malloc(sizeof(Parameter));
+  cJSON_ArrayForEach(parameterJson, child) {
+    parse_parameter(auxParameter, parameterJson);
+    parameters = create_parameter(parameters, auxParameter);
+  }
+  return parameters;
+}
+
+Arguments *parse_arguments(cJSON *child);
+
 void parse_expression(Term *term, cJSON *jsonExpression) {
 
   cJSON *child = NULL;
@@ -83,6 +96,10 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->kind = First;
       } else if (strcmp(child->valuestring, "Second") == 0) {
         term->kind = Second;
+      } else if (strcmp(child->valuestring, "Function") == 0) {
+        term->kind = Function;
+      } else if (strcmp(child->valuestring, "Call") == 0) {
+        term->kind = Call;
       }
     } else if (strcmp(key, "location") == 0) {
       parse_location(&term->location, child);
@@ -212,12 +229,40 @@ void parse_expression(Term *term, cJSON *jsonExpression) {
         term->data.tupleTerm.second = auxTerm;
       }
     } break;
-    case Call:
-      break;
     case Function:
+      if (strcmp(key, "parameters") == 0) {
+        Parameters *parameters = parse_parameters(child);
+        term->data.functionTerm.parameters = parameters;
+      } else if (strcmp(key, "value") == 0) {
+        Term *auxTerm = malloc(sizeof(Term));
+        parse_expression(auxTerm, child);
+        term->data.functionTerm.value = auxTerm;
+      }
+      break;
+    case Call:
+      if (strcmp(key, "callee") == 0) {
+        Term *auxTerm = malloc(sizeof(Term));
+        parse_expression(auxTerm, child);
+        term->data.callTerm.callee = auxTerm;
+      } else if (strcmp(key, "arguments") == 0) {
+        Arguments *arguments = parse_arguments(child);
+        term->data.callTerm.arguments = arguments;
+      }
+
       break;
     }
   }
+}
+
+Arguments *parse_arguments(cJSON *child) {
+  cJSON *parameterJson = NULL;
+  Arguments *arguments = NULL;
+  Term *term = malloc(sizeof(Term));
+  cJSON_ArrayForEach(parameterJson, child) {
+    parse_expression(term, parameterJson);
+    arguments = create_argument(arguments, term);
+  }
+  return arguments;
 }
 
 void parse_program(File *file, char *json_data) {

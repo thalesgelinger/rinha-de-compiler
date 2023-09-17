@@ -48,6 +48,9 @@ Val eval(Term *term, Hash *variables) {
       case tuple_type:
         // TODO
         break;
+      case clojure_type:
+        // TODO
+        break;
       }
 
       switch (secondVal.type) {
@@ -63,10 +66,17 @@ Val eval(Term *term, Hash *variables) {
       case tuple_type:
         // TODO
         break;
+      case clojure_type:
+        // TODO
+        break;
       }
 
       printf("(%s, %s)\n", firstTerm, secondTerm);
     } break;
+    case clojure_type:
+      // TODO
+      printf("<clojure#>");
+      break;
     }
   } break;
   case Str:
@@ -130,6 +140,10 @@ Val eval(Term *term, Hash *variables) {
         case tuple_type:
           result.value.boolValue = false;
           break;
+        case clojure_type:
+          // FIXME
+          result.value.boolValue = false;
+          break;
         }
       }
       break;
@@ -147,6 +161,10 @@ Val eval(Term *term, Hash *variables) {
               strcmp(lhs.value.strValue, rhs.value.strValue) != 0;
           break;
         case tuple_type:
+          result.value.boolValue = true;
+          break;
+        case clojure_type:
+          // FIXME
           result.value.boolValue = true;
           break;
         }
@@ -186,9 +204,33 @@ Val eval(Term *term, Hash *variables) {
     result.type = bool_type;
     result.value.boolValue = term->data.boolTerm.value;
     break;
-  case Call:
-    break;
+  case Call: {
+    Val fnVal = eval(term->data.callTerm.callee, variables);
+    switch (fnVal.type) {
+    case clojure_type: {
+      FunctionTerm fn = fnVal.value.clojureValue.fn;
+      Hash *fn_scope = malloc(sizeof(Hash));
+      Parameters *paramsIterator = fn.parameters;
+      Arguments *argsIterator = term->data.callTerm.arguments;
+      while (paramsIterator) {
+        Val val = eval(argsIterator->value, variables);
+        char *key = paramsIterator->value->text;
+        insert_node(fn_scope, key, &val);
+        paramsIterator = paramsIterator->previous;
+        argsIterator = argsIterator->previous;
+      }
+
+      result = eval(fn.value, fn_scope);
+    } break;
+    default:
+      printf("Invalid, this is not a function");
+      break;
+    }
+  } break;
   case Function:
+    result.type = clojure_type;
+    result.value.clojureValue.fn = term->data.functionTerm;
+    result.value.clojureValue.env = variables;
     break;
   case Let: {
     Val val = eval(term->data.letTerm.value, variables);

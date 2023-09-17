@@ -46,9 +46,14 @@ typedef struct BoolTerm {
 
 typedef struct CallTerm {
   TermKind kind;
-  struct Term *calle;
-  struct Term **arguments;
+  struct Term *callee;
+  struct Arguments *arguments;
 } CallTerm;
+
+typedef struct Arguments {
+  struct Term *value;
+  struct Arguments *previous;
+} Arguments;
 
 typedef enum BinaryOp {
   Add,
@@ -84,9 +89,15 @@ typedef struct Parameter {
   Location location;
 } Parameter;
 
+typedef struct Parameters {
+  Parameter *value;
+  struct Parameters *previous;
+} Parameters;
+
 typedef struct FunctionTerm {
   TermKind kind;
-  Parameter *parameters;
+  Parameters *parameters;
+  struct Term *value;
 } FunctionTerm;
 
 typedef struct LetTerm {
@@ -159,6 +170,10 @@ typedef union Value {
     Term *first;
     Term *second;
   } tupleValue;
+  struct {
+    FunctionTerm fn;
+    struct Hash *env;
+  } clojureValue;
 } Value;
 
 typedef enum Type {
@@ -166,11 +181,18 @@ typedef enum Type {
   string_type,
   bool_type,
   tuple_type,
+  clojure_type,
 } Type;
 
 typedef struct {
   Type type;
   Value value;
 } Val;
+
+Parameters *create_parameter(Parameters *previous, Parameter *parameter);
+void print_parameters(Parameters *head);
+
+Arguments *create_argument(Arguments *previous, Term *term);
+void print_arguments(Arguments *head);
 
 #endif
