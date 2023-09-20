@@ -18,5 +18,6 @@ typedef struct Hash {
 Val *search(Hash *hash, char *key);
 
 void insert_node(Hash *hash, char *key, Val *value);
+void print_hash(Hash *hash);
 
 #endif

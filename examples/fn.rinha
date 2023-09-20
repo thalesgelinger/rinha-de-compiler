@@ -1,5 +1,6 @@
-let sum = fn (a) => {
-    a+10
+let c = 2;
+let sum = fn (a,b) => {
+    a+b+c
 };
 
-print("sum: " + sum(10))
+print("sum: " + sum(10, 20))

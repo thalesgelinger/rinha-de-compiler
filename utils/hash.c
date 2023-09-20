@@ -45,3 +45,16 @@ Val *search(Hash *hash, char *key) {
   }
   return NULL;
 }
+
+void print_hash(Hash *hash) {
+  for (int i = 0; i < HASH_SIZE; i++) {
+    Node *current = hash->list[i];
+    while (current != NULL) {
+      printf("Key: %s, Value: %d\n", current->key,
+             current->value->value
+                 .intValue); // Replace some_value with the
+                             // appropriate field in your Val struct
+      current = current->next;
+    }
+  }
+}

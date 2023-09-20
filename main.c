@@ -12,6 +12,13 @@ void raise(char *message) {
   exit(EXIT_FAILURE);
 }
 
+Val eval(Term *term, Hash *variables);
+
+Val eval_args(Term *term, Hash *scope) {
+  Val val = eval(term, scope);
+  return val;
+}
+
 Val eval(Term *term, Hash *variables) {
   Val result;
 
@@ -116,7 +123,6 @@ Val eval(Term *term, Hash *variables) {
       break;
     case Div:
       result.type = int_type;
-      printf("\n");
       result.value.intValue = lhs.value.intValue / rhs.value.intValue;
       break;
     case Rem:
@@ -209,17 +215,16 @@ Val eval(Term *term, Hash *variables) {
     switch (fnVal.type) {
     case clojure_type: {
       FunctionTerm fn = fnVal.value.clojureValue.fn;
-      Hash *fn_scope = malloc(sizeof(Hash));
-      Parameters *paramsIterator = fn.parameters;
-      Arguments *argsIterator = term->data.callTerm.arguments;
-      while (paramsIterator) {
-        Val val = eval(argsIterator->value, variables);
-        char *key = paramsIterator->value->text;
-        insert_node(fn_scope, key, &val);
-        paramsIterator = paramsIterator->previous;
-        argsIterator = argsIterator->previous;
+      Hash *fn_scope = variables;
+      ParametersList *params = fn.parameters;
+      ArgsList *args = term->data.callTerm.arguments;
+      for (int i = 0; i < term->data.callTerm.arguments->size; i++) {
+        Val val = eval(args->items[i], variables);
+        char *key = params->items[i]->text;
+        Val *newVal = (Val *)malloc(sizeof(Val));
+        *newVal = val;
+        insert_node(fn_scope, key, newVal);
       }
-
       result = eval(fn.value, fn_scope);
     } break;
     default:
@@ -230,16 +235,35 @@ Val eval(Term *term, Hash *variables) {
   case Function:
     result.type = clojure_type;
     result.value.clojureValue.fn = term->data.functionTerm;
-    result.value.clojureValue.env = variables;
+    Hash *scope = variables;
+    result.value.clojureValue.env = scope;
     break;
   case Let: {
     Val val = eval(term->data.letTerm.value, variables);
-    insert_node(variables, term->data.letTerm.name->text, &val);
+
+    switch (val.type) {
+    case clojure_type: {
+      Val *clojure = malloc(sizeof(Val));
+
+      clojure->type = clojure_type;
+      clojure->value.clojureValue.fn = val.value.clojureValue.fn;
+      clojure->value.clojureValue.env = val.value.clojureValue.env;
+
+      char *key = term->data.letTerm.name->text;
+      insert_node(clojure->value.clojureValue.env, key, clojure);
+      insert_node(variables, key, clojure);
+    } break;
+    default:
+      insert_node(variables, term->data.letTerm.name->text, &val);
+      break;
+    }
+
     eval(term->data.letTerm.next, variables);
   } break;
   case Var: {
     Val *var = search(variables, term->data.varTerm.text);
     if (var == NULL) {
+      printf("Var eh null\n");
       // TODO: Throw Error
     } else {
       result.type = var->type;

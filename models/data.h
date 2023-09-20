@@ -44,16 +44,16 @@ typedef struct BoolTerm {
   bool value;
 } BoolTerm;
 
+typedef struct ArgsList {
+  struct Term **items;
+  int size;
+} ArgsList;
+
 typedef struct CallTerm {
   TermKind kind;
   struct Term *callee;
-  struct Arguments *arguments;
+  ArgsList *arguments;
 } CallTerm;
-
-typedef struct Arguments {
-  struct Term *value;
-  struct Arguments *previous;
-} Arguments;
 
 typedef enum BinaryOp {
   Add,
@@ -89,14 +89,14 @@ typedef struct Parameter {
   Location location;
 } Parameter;
 
-typedef struct Parameters {
-  Parameter *value;
-  struct Parameters *previous;
-} Parameters;
+typedef struct ParametersList {
+  Parameter **items;
+  int size;
+} ParametersList;
 
 typedef struct FunctionTerm {
   TermKind kind;
-  Parameters *parameters;
+  ParametersList *parameters;
   struct Term *value;
 } FunctionTerm;
 
@@ -189,10 +189,14 @@ typedef struct {
   Value value;
 } Val;
 
-Parameters *create_parameter(Parameters *previous, Parameter *parameter);
-void print_parameters(Parameters *head);
+ParametersList *init_params_list();
+void add_param(ParametersList *list, Parameter *element);
+void free_params(ParametersList *list);
+void print_params(ParametersList *list);
 
-Arguments *create_argument(Arguments *previous, Term *term);
-void print_arguments(Arguments *head);
+ArgsList *init_args_list();
+void add_arg(ArgsList *list, Term *element);
+void free_args(ArgsList *list);
+void print_args(ArgsList *list);
 
 #endif

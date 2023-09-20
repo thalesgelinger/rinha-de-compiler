@@ -17,35 +17,8 @@ My goal is making it possible to run the ast provided into a C interpreter
 - run ```rinha examples/main.rinha > main.json``` for creating the ast in json
 - run ```./rinha main.json```
 
-### All Terms to be implemented
+## Bugs
 
-- [x] Int
-- [x] Str
-- [x] Binary
-- [x] If
-- [x] Print
-- [x] Bool
-- [x] Tuple
-- [ ] Function
-- [x] Let
-- [ ] Call
-- [x] Var
-- [x] First
-- [x] Second
-
-Binary Options
-- [x] Add
-- [x] Sub
-- [x] Mul
-- [x] Div
-- [x] Rem
-- [x] Eq
-- [x] Neq
-- [x] Lt
-- [x] Gt
-- [x] Lte
-- [x] Gte
-- [x] And
-- [x] Or
-
+- [ ] Recursion is not working correctly
+- [ ] Functions out of scope not being passed forward
 
